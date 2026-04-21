@@ -83,7 +83,7 @@ nav.solid{background:rgba(10,6,2,0.95);border-bottom:1px solid rgba(201,168,76,0
 .nav-links a:hover::after{transform:scaleX(1)}
 
 /* Sections */
-section{position:relative;overflow:hidden}
+section{position:relative;overflow:hidden;scroll-margin-top: 100px}
 
 /* ═══════════ HERO ═══════════ */
 #hero{height:100vh;display:flex;align-items:center;justify-content:center}
@@ -96,6 +96,8 @@ section{position:relative;overflow:hidden}
 .parallax-layer{
   position:absolute;inset:0;
   will-change:transform;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .hero-content{
@@ -460,10 +462,11 @@ footer p{
 
 /* ═══════════ MOBILE ═══════════ */
 @media(max-width:768px){
-  nav{padding:16px 24px}
+  nav{padding: clamp(12px, 2vw, 20px) clamp(20px, 6vw, 60px)}
   .nav-links{display:none}
-  #about,#skills,#projects,#contact{padding:80px 24px}
-  .about-inner{grid-template-columns:1fr}
+  #about,#skills,#projects,#contact{padding: clamp(80px, 10vw, 120px) clamp(20px, 6vw, 60px)}
+  .skills-grid,.projects-grid {gap: clamp(20px, 3vw, 32px);}
+  .about-inner{gap: clamp(40px, 6vw, 80px)}
   .about-visual{display:none}
   footer{flex-direction:column;gap:12px;text-align:center}
 }
@@ -1265,27 +1268,37 @@ document.querySelectorAll('a,button,.skill-tag,.project-card,.stat-card,.contact
 // Parallax on scroll
 const scene = document.getElementById('parallaxScene')
 const layers = {
-  sky: {el:document.getElementById('layer-sky'), speed:0.08},
-  mountains: {el:document.getElementById('layer-mountains'), speed:0.18},
-  mist: {el:document.getElementById('layer-mist'), speed:0.12},
-  bambooFar: {el:document.getElementById('layer-bamboo-far'), speed:0.28},
-  stone: {el:document.getElementById('layer-stone'), speed:0.38},
-  bambooNear: {el:document.getElementById('layer-bamboo-near'), speed:0.55},
-  ground: {el:document.getElementById('layer-ground'), speed:0.65},
-}
+  sky: {el:document.getElementById('layer-sky'), speed:0.05},
+  mountains: {el:document.getElementById('layer-mountains'), speed:0.15},
+  mist: {el:document.getElementById('layer-mist'), speed:0.25},
+  bambooFar: {el:document.getElementById('layer-bamboo-far'), speed:0.40},
+  stone: {el:document.getElementById('layer-stone'), speed:0.60},
+  bambooNear: {el:document.getElementById('layer-bamboo-near'), speed:0.85},
+  ground: {el:document.getElementById('layer-ground'), speed:1.1},
+};
+
+let ticking = false;
 
 function updateParallax(){
-  const scrollY = window.scrollY
-  const heroH = document.getElementById('hero').offsetHeight
-  if(scrollY > heroH) return
+  const scrollY = window.scrollY;
+  const heroH = document.getElementById('hero').offsetHeight;
+
+  if(scrollY > heroH) return;
 
   Object.values(layers).forEach(layer=>{
-    const y = scrollY * layer.speed
-    layer.el.style.transform = `translateY(${y}px)`
-  })
+    const y = scrollY * layer.speed;
+    layer.el.style.transform = `translateY(${y}px)`;
+  });
+
+  ticking = false;
 }
 
-window.addEventListener('scroll', updateParallax, {passive:true})
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(updateParallax);
+    ticking = true;
+  }
+}, { passive: true });
 
 // Navbar solid on scroll
 const nav = document.getElementById('nav')
@@ -1331,13 +1344,6 @@ const statObserver = new IntersectionObserver(entries=>{
 },{threshold:0.5})
 statNums.forEach(s=>statObserver.observe(s))
 
-// Smooth scroll for nav links
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    const target = document.querySelector(a.getAttribute('href'))
-    if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth'})}
-  })
-})
 </script>
 </body>
 </html>
