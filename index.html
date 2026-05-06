@@ -405,6 +405,30 @@ section{position:relative;overflow:hidden;scroll-margin-top: 100px}
 .contact-link:hover::before{transform:scaleX(1)}
 .contact-link span{position:relative;z-index:1}
 
+.copy-toast {
+    visibility: hidden;
+    min-width: 150px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 12px;
+    position: fixed;
+    z-index: 9999;
+    right: 30px;
+    bottom: 30px;
+    font-family: sans-serif;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.copy-toast.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+@keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+
 /* ═══════════ FOOTER ═══════════ */
 footer{
   background:#040302;
@@ -1217,9 +1241,12 @@ footer p{
       <div class="gold-line" style="margin:0 auto 28px"></div>
       <p class="contact-sub">Open to freelance projects, collaborations, and conversations about craft, code, or ideas worth building.</p>
       <div class="contact-links">
-        <a href="#" class="contact-link"><span>GitHub</span></a>
-        <a href="#" class="contact-link"><span>LinkedIn</span></a>
-        <a href="#" class="contact-link"><span>Email</span></a>
+        <a href="github.com/S0bu" class="contact-link"><span>GitHub</span></a>
+        <a href="linkedin.com/in/harish-ku/" class="contact-link"><span>LinkedIn</span></a>
+        <a href="javascript:void(0)" class="contact-link" onclick="copyEmail('yourname@email.com')">
+          <span>Email</span>
+        </a>
+        <div id="copy-popup" class="copy-toast">Copied email!</div>
       </div>
     </div>
   </div>
@@ -1343,6 +1370,19 @@ const statObserver = new IntersectionObserver(entries=>{
   })
 },{threshold:0.5})
 statNums.forEach(s=>statObserver.observe(s))
+
+  function copyEmail(email) {
+    // 1. Copy the email to clipboard
+    navigator.clipboard.writeText(email).then(() => {
+        const popup = document.getElementById("copy-popup");
+        popup.className = "copy-toast show";
+        setTimeout(function(){ 
+            popup.className = popup.className.replace("show", ""); 
+        }, 3000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
 
 </script>
 </body>
